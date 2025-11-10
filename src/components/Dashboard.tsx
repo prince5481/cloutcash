@@ -12,6 +12,7 @@ import { ChatModal } from "./dashboard/ChatModal";
 import { PremiumCard } from "./dashboard/PremiumCard";
 import { NotificationBell } from "./dashboard/NotificationBell";
 import { ProfileChecklistModal } from "./dashboard/ProfileChecklistModal";
+import { RecommendedMatches } from "./dashboard/RecommendedMatches";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { computeProfileCompletion } from "@/lib/profileCompletion";
 
@@ -367,6 +368,9 @@ export const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Recommended Matches Section */}
+        <RecommendedMatches userType={isCreator ? "creator" : "brand"} />
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
