@@ -7,6 +7,10 @@ interface ProfileData {
   follower_count?: number;
   engagement_rate?: number;
   marketing_budget?: number;
+  avatar_url?: string;
+  bio?: string;
+  website?: string;
+  goal?: string;
   user_type: string;
   [key: string]: any;
 }
@@ -36,22 +40,22 @@ export function computeProfileCompletion(profile: ProfileData): ProfileCompletio
       { label: "Follower bracket", completed: !!profile.follower_count, weight: 11 },
       { label: "Engagement rate", completed: !!profile.engagement_rate, weight: 11 },
       { label: "At least 1 media sample", completed: false, weight: 11 }, // Not tracked yet
-      { label: "Bio (120+ characters)", completed: false, weight: 11 }, // Not tracked yet
-      { label: "Profile avatar", completed: false, weight: 12 } // Not tracked yet
+      { label: "Bio (120+ characters)", completed: (profile.bio?.length || 0) >= 120, weight: 11 },
+      { label: "Profile avatar", completed: !!profile.avatar_url, weight: 12 }
     );
   } else {
     // Brand fields (10 items, 10 points each)
     checklist.push(
       { label: "Email verified", completed: !!profile.email, weight: 10 },
-      { label: "Name and website", completed: !!profile.full_name, weight: 10 },
+      { label: "Name and website", completed: !!(profile.full_name && profile.website), weight: 10 },
       { label: "Sector and niches", completed: !!profile.niche, weight: 10 },
       { label: "Monthly marketing budget", completed: !!profile.marketing_budget, weight: 10 },
       { label: "Target follower brackets", completed: !!profile.follower_count, weight: 10 },
       { label: "City/location", completed: !!profile.location, weight: 10 },
-      { label: "Campaign objective", completed: false, weight: 10 }, // Not tracked yet
-      { label: "Brief (60+ characters)", completed: false, weight: 10 }, // Not tracked yet
-      { label: "At least 1 creative", completed: false, weight: 10 }, // Not tracked yet
-      { label: "Short bio", completed: false, weight: 10 } // Not tracked yet
+      { label: "Campaign objective", completed: !!profile.goal, weight: 10 },
+      { label: "Brief (60+ characters)", completed: (profile.bio?.length || 0) >= 60, weight: 10 },
+      { label: "At least 1 creative", completed: !!profile.avatar_url, weight: 10 },
+      { label: "Short bio", completed: !!profile.bio, weight: 10 }
     );
   }
 

@@ -9,6 +9,7 @@ import { Loader2, Users, Briefcase } from "lucide-react";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "@/assets/cloutcash-logo.png";
+import { OnboardingModal } from "./OnboardingModal";
 
 interface AuthCardProps {
   mode: "login" | "signup";
@@ -34,6 +35,8 @@ export const AuthCard = ({ mode, onSuccess }: AuthCardProps) => {
   const [marketingBudget, setMarketingBudget] = useState("");
   const [userType, setUserType] = useState<"creator" | "brand">("creator");
   const [loading, setLoading] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [newUserId, setNewUserId] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,11 +133,13 @@ export const AuthCard = ({ mode, onSuccess }: AuthCardProps) => {
         if (profileError) console.error("Profile update error:", profileError);
 
         toast({
-          title: "Success!",
-          description: "Welcome aboard! You're all set to start matching.",
+          title: "Account Created!",
+          description: "Let's complete your profile in 3 quick steps.",
         });
 
-        if (onSuccess) onSuccess();
+        // Show onboarding modal
+        setNewUserId(authData.user.id);
+        setShowOnboarding(true);
       }
     } catch (error: any) {
       toast({
@@ -376,6 +381,18 @@ export const AuthCard = ({ mode, onSuccess }: AuthCardProps) => {
           )}
         </AnimatePresence>
       </CardContent>
+
+      {showOnboarding && newUserId && (
+        <OnboardingModal
+          isOpen={showOnboarding}
+          onComplete={() => {
+            setShowOnboarding(false);
+            if (onSuccess) onSuccess();
+          }}
+          userType={userType}
+          userId={newUserId}
+        />
+      )}
     </Card>
   );
 };
