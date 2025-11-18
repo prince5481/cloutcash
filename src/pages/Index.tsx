@@ -1,3 +1,4 @@
+import React, { useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
@@ -9,18 +10,44 @@ import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {
+  const footerRef = useRef<HTMLDivElement | null>(null);
+  const howItWorksRef = useRef<HTMLDivElement | null>(null);
+  const heroRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToFooter = () => {
+    footerRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToHowItWorks = () => {
+    howItWorksRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToHero = () => {
+    heroRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <>
-      <Navbar />
+      <Navbar
+        onHomeClick={scrollToHero}
+        onAboutClick={scrollToHowItWorks}
+        onContactClick={scrollToFooter}
+      />
+
       <main className="min-h-screen">
-        <Hero />
+        {/* Attach ref to Hero */}
+        <div ref={heroRef}>
+          <Hero />
+        </div>
         <Features />
-        <HowItWorks />
+        <div ref={howItWorksRef}>
+          <HowItWorks />
+        </div>
         <ForInfluencers />
         <ForBrands />
         <Testimonials />
         <CTA />
-        <Footer />
+        <Footer ref={footerRef} />
       </main>
     </>
   );
