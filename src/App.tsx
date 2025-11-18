@@ -9,6 +9,7 @@ import DashboardPage from "./pages/DashboardPage";
 import MatchPage from "./pages/MatchPage";
 import MatchesPage from "./pages/MatchesPage";
 import ProfilePage from "./pages/ProfilePage";
+import SwipePage from "./pages/SwipePage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -52,6 +53,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/swipe" 
+            element={
+              <ProtectedRoute>
+                <SwipePage />
               </ProtectedRoute>
             } 
           />
