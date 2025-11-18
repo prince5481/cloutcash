@@ -3,7 +3,8 @@ import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Navbar } from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Star, Heart, SlidersHorizontal, MapPin, DollarSign, TrendingUp } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { X, Star, Heart, SlidersHorizontal, MapPin, DollarSign, TrendingUp, Users, ExternalLink, Target, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMatchFeed } from '@/hooks/useMatchFeed';
 import { useFeedback } from '@/hooks/useFeedback';
@@ -18,6 +19,9 @@ const SwipePage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [exitX, setExitX] = useState(0);
   const [exitDirection, setExitDirection] = useState<'left' | 'right' | 'up' | null>(null);
+  const [profileSheetOpen, setProfileSheetOpen] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<Influencer | null>(null);
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -170,7 +174,12 @@ const SwipePage = () => {
                           opacity: 1 - idx * 0.3,
                         }}
                       >
-                        <CardContent profile={candidate.item} />
+                        <CardContent 
+                          profile={candidate.item} 
+                          matchScore={Math.floor(candidate.score * 100)}
+                          isHovered={false}
+                          onViewProfile={() => {}}
+                        />
                       </div>
                     );
                   }
@@ -197,6 +206,8 @@ const SwipePage = () => {
                         opacity: 0,
                       } : {}}
                       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      onMouseEnter={() => setHoveredCardId(candidate.item.id)}
+                      onMouseLeave={() => setHoveredCardId(null)}
                     >
                       {/* Colored glows */}
                       <motion.div
@@ -221,7 +232,15 @@ const SwipePage = () => {
                         }}
                       />
                       
-                      <CardContent profile={candidate.item} />
+                      <CardContent 
+                        profile={candidate.item} 
+                        matchScore={Math.floor(candidate.score * 100)}
+                        isHovered={hoveredCardId === candidate.item.id}
+                        onViewProfile={() => {
+                          setSelectedProfile(candidate.item);
+                          setProfileSheetOpen(true);
+                        }}
+                      />
                     </motion.div>
                   );
                 })}
@@ -270,60 +289,236 @@ const SwipePage = () => {
             </div>
           </div>
         )}
+
+        {/* Profile Side Sheet */}
+        <Sheet open={profileSheetOpen} onOpenChange={setProfileSheetOpen}>
+          <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+            {selectedProfile && (
+              <>
+                <SheetHeader>
+                  <SheetTitle>{selectedProfile.name || selectedProfile.handle}</SheetTitle>
+                  <SheetDescription>
+                    Full profile details and statistics
+                  </SheetDescription>
+                </SheetHeader>
+
+                <div className="mt-6 space-y-6">
+                  {/* Avatar */}
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                    <img
+                      src={selectedProfile.avatar}
+                      alt={selectedProfile.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Basic Info */}
+                  <div>
+                    <h3 className="font-semibold mb-2">About</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedProfile.bio || 'No bio available'}
+                    </p>
+                  </div>
+
+                  {/* Niches */}
+                  <div>
+                    <h3 className="font-semibold mb-2">Niches</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProfile.niches.map((niche) => (
+                        <Badge key={niche} variant="secondary">
+                          {niche}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div>
+                    <h3 className="font-semibold mb-3">Statistics</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-1">Followers</p>
+                        <p className="text-lg font-bold">{selectedProfile.followers.toLocaleString()}</p>
+                      </div>
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-1">Engagement</p>
+                        <p className="text-lg font-bold">{selectedProfile.engagementRate}%</p>
+                      </div>
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-1">Avg Views</p>
+                        <p className="text-lg font-bold">{selectedProfile.avgViews.toLocaleString()}</p>
+                      </div>
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-1">Price/Post</p>
+                        <p className="text-lg font-bold">${selectedProfile.pricePerPost.toLocaleString()}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Platforms */}
+                  <div>
+                    <h3 className="font-semibold mb-2">Platforms</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProfile.platforms.map((platform) => (
+                        <Badge key={platform} variant="outline">
+                          {platform}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Audience */}
+                  <div>
+                    <h3 className="font-semibold mb-2">Audience</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <span>{selectedProfile.audienceGeo.join(', ')}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-muted-foreground" />
+                        <span>Age: {selectedProfile.audienceAge.join(', ')}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Past Brands */}
+                  {selectedProfile.pastBrands.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold mb-2">Past Collaborations</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProfile.pastBrands.map((brand) => (
+                          <Badge key={brand} variant="secondary">
+                            {brand}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </SheetContent>
+        </Sheet>
       </div>
     </>
   );
 };
 
 // Card Content Component
-const CardContent = ({ profile }: { profile: Influencer }) => {
+const CardContent = ({ 
+  profile, 
+  matchScore, 
+  isHovered, 
+  onViewProfile 
+}: { 
+  profile: Influencer; 
+  matchScore: number;
+  isHovered: boolean;
+  onViewProfile: () => void;
+}) => {
+  // Generate mock deliverables based on profile
+  const deliverables = [
+    `${profile.platforms[0]} content creation`,
+    `${profile.niches[0]} targeted campaigns`,
+    `Story & feed posts included`
+  ];
+
+  // Calculate mock insights
+  const audienceOverlap = Math.floor(60 + Math.random() * 30);
+  const engagementTier = profile.engagementRate > 5 ? 'High' : profile.engagementRate > 3 ? 'Medium' : 'Good';
+  const toneFit = matchScore > 85 ? 'Excellent' : matchScore > 70 ? 'Good' : 'Fair';
+
   return (
-    <div className="w-full h-full bg-card border rounded-2xl overflow-hidden shadow-xl">
-      {/* Image */}
-      <div className="relative h-96 bg-muted">
+    <div className="w-full h-[580px] bg-card border rounded-2xl overflow-hidden shadow-xl flex flex-col">
+      {/* Image with Match Badge */}
+      <div className="relative h-48 bg-muted flex-shrink-0">
         <img
           src={profile.avatar}
           alt={profile.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         
-        {/* Name overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <h2 className="text-3xl font-bold mb-1">{profile.name || profile.handle}</h2>
-          <p className="text-white/90 flex items-center gap-1">
-            <MapPin className="w-4 h-4" />
-            {profile.audienceGeo[0] || 'Global'}
-          </p>
-        </div>
+        {/* Match % Badge */}
+        <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 text-sm font-bold">
+          {matchScore}% Match
+        </Badge>
+
+        {/* View Profile Link (on hover) */}
+        {isHovered && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewProfile();
+            }}
+            className="absolute bottom-3 right-3 bg-background/90 backdrop-blur px-4 py-2 rounded-lg text-sm font-medium hover:bg-background transition-colors flex items-center gap-2"
+          >
+            View Profile
+            <ExternalLink className="w-4 h-4" />
+          </motion.button>
+        )}
       </div>
 
       {/* Info */}
-      <div className="p-6 space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {profile.niches.slice(0, 3).map((niche) => (
-            <Badge key={niche} variant="secondary">
-              {niche}
+      <div className="p-5 space-y-4 flex-1 flex flex-col overflow-hidden">
+        {/* Name & Industry Tag */}
+        <div>
+          <h3 className="font-bold text-xl line-clamp-1 mb-2">
+            {profile.name || profile.handle}
+          </h3>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="secondary">
+              {profile.niches[0]}
             </Badge>
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
+              {profile.audienceGeo[0] || 'Global'}
+            </span>
+          </div>
+        </div>
+
+        {/* Budget */}
+        <div className="flex items-center gap-2 text-sm">
+          <DollarSign className="w-4 h-4 text-primary" />
+          <span className="font-semibold">${profile.pricePerPost.toLocaleString()}/post</span>
+          <span className="text-muted-foreground">• Budget ready</span>
+        </div>
+
+        {/* Deliverables */}
+        <div className="space-y-1.5 flex-shrink-0">
+          {deliverables.slice(0, 3).map((item, idx) => (
+            <div key={idx} className="flex items-start gap-2 text-sm">
+              <span className="text-primary mt-0.5">•</span>
+              <span className="text-muted-foreground line-clamp-1">{item}</span>
+            </div>
           ))}
         </div>
 
-        <p className="text-muted-foreground line-clamp-2">{profile.bio || 'No bio available'}</p>
-
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-          <div className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-primary" />
-            <div>
-              <p className="text-sm text-muted-foreground">Price/Post</p>
-              <p className="font-semibold">${profile.pricePerPost.toLocaleString()}</p>
+        {/* Insights Row */}
+        <div className="grid grid-cols-3 gap-3 pt-3 border-t mt-auto">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 text-primary mb-1">
+              <Target className="w-3.5 h-3.5" />
+              <span className="text-xs font-medium">{audienceOverlap}%</span>
             </div>
+            <p className="text-[10px] text-muted-foreground">Audience</p>
           </div>
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-primary" />
-            <div>
-              <p className="text-sm text-muted-foreground">Engagement</p>
-              <p className="font-semibold">{profile.engagementRate}%</p>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 text-primary mb-1">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span className="text-xs font-medium">{engagementTier}</span>
             </div>
+            <p className="text-[10px] text-muted-foreground">Engagement</p>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 text-primary mb-1">
+              <Zap className="w-3.5 h-3.5" />
+              <span className="text-xs font-medium">{toneFit}</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground">Tone Fit</p>
           </div>
         </div>
       </div>
