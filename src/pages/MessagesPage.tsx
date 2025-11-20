@@ -281,9 +281,28 @@ const MessagesPage = () => {
     };
 
     fetchConversations();
-    const interval = setInterval(fetchConversations, 3000);
+    
+    // Set up realtime subscription for new conversations
+    const conversationsChannel = supabase
+      .channel('conversations-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'conversations',
+          filter: `creator_id=eq.${currentProfile.id},brand_id=eq.${currentProfile.id}`
+        },
+        () => {
+          console.log('New conversation detected, refetching...');
+          fetchConversations();
+        }
+      )
+      .subscribe();
 
-    return () => clearInterval(interval);
+    return () => {
+      supabase.removeChannel(conversationsChannel);
+    };
   }, [currentProfile]);
 
   useEffect(() => {
