@@ -1,11 +1,14 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
+import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { toast } from "@/hooks/use-toast";
 import { LogOut, LayoutDashboard, Compass, MessageSquare } from "lucide-react";
 import logo from "@/assets/cloutcash-logo.png";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NavbarProps {
   onHomeClick: () => void;
@@ -17,6 +20,30 @@ export const Navbar: React.FC<NavbarProps> = ({ onHomeClick, onContactClick, onA
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [currentProfileId, setCurrentProfileId] = useState<string | null>(null);
+
+  // Fetch current user's profile ID
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) {
+        setCurrentProfileId(null);
+        return;
+      }
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      if (data) {
+        setCurrentProfileId(data.id);
+      }
+    };
+    fetchProfile();
+  }, [user]);
+
+  // Use unread count hook
+  const { totalUnread } = useUnreadCount(currentProfileId);
 
   const handleLogout = async () => {
     await logout();
@@ -89,9 +116,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onHomeClick, onContactClick, onA
                   variant={location.pathname === "/messages" ? "secondary" : "ghost"}
                   size="sm"
                   onClick={() => navigate("/messages")}
+                  className="relative"
                 >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Messages
+                  {totalUnread > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute -top-1 -right-1 h-5 min-w-[1.25rem] px-1 text-xs"
+                    >
+                      {totalUnread > 99 ? "99+" : totalUnread}
+                    </Badge>
+                  )}
                 </Button>
                 <Button
                   variant="outline"

@@ -4,11 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import { Search, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
+import { useUnreadCount } from "@/hooks/useUnreadCount";
+import { useTypingIndicator } from "@/hooks/useTypingIndicator";
 
 interface Profile {
   id: string;
@@ -36,7 +39,7 @@ interface Message {
   sender_id: string;
   content: string;
   created_at: string;
-  read: boolean;
+  read_at: string | null;
 }
 
 // Mock data for testing
@@ -160,7 +163,7 @@ const MOCK_MESSAGES: Message[] = [
     sender_id: "brand-1",
     content: "Hi! We're really interested in working with you on our new product launch.",
     created_at: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
-    read: true,
+    read_at: new Date(Date.now() - 1000 * 60 * 9).toISOString(),
   },
   {
     id: "msg-2",
@@ -168,7 +171,7 @@ const MOCK_MESSAGES: Message[] = [
     sender_id: "creator-1",
     content: "That sounds exciting! I'd love to hear more about the campaign.",
     created_at: new Date(Date.now() - 1000 * 60 * 8).toISOString(),
-    read: true,
+    read_at: new Date(Date.now() - 1000 * 60 * 7).toISOString(),
   },
   {
     id: "msg-3",
@@ -176,7 +179,7 @@ const MOCK_MESSAGES: Message[] = [
     sender_id: "brand-1",
     content: "Great! We're planning a 3-month campaign with weekly content. What are your rates for that?",
     created_at: new Date(Date.now() - 1000 * 60 * 6).toISOString(),
-    read: true,
+    read_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
   },
   {
     id: "msg-4",
@@ -184,7 +187,7 @@ const MOCK_MESSAGES: Message[] = [
     sender_id: "creator-1",
     content: "Looking forward to collaborating on this campaign!",
     created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-    read: false,
+    read_at: null,
   },
 ];
 
@@ -198,6 +201,15 @@ const MessagesPage = () => {
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
   const [useMockData, setUseMockData] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Unread count hook
+  const { totalUnread, unreadByConversation, markConversationAsRead } = useUnreadCount(currentProfile?.id || null);
+
+  // Typing indicator hook
+  const { isOtherUserTyping, startTyping, stopTyping } = useTypingIndicator(
+    activeConversation?.id || null,
+    currentProfile?.id || null
+  );
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -308,6 +320,11 @@ const MessagesPage = () => {
   useEffect(() => {
     if (!activeConversation) return;
 
+    // Mark conversation as read when opened
+    if (!useMockData && currentProfile) {
+      markConversationAsRead(activeConversation.id);
+    }
+
     // If using mock data, filter mock messages for active conversation
     if (useMockData) {
       setMessages(MOCK_MESSAGES.filter(m => m.conversation_id === activeConversation.id));
@@ -353,10 +370,13 @@ const MessagesPage = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activeConversation, useMockData]);
+  }, [activeConversation, useMockData, currentProfile, markConversationAsRead]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeConversation) return;
+
+    // Stop typing indicator
+    stopTyping();
 
     // If using mock data, add message to mock state
     if (useMockData) {
@@ -366,7 +386,7 @@ const MessagesPage = () => {
         sender_id: currentProfile?.id || "creator-1",
         content: newMessage.trim(),
         created_at: new Date().toISOString(),
-        read: false,
+        read_at: null,
       };
       setMessages((prev) => [...prev, newMsg]);
       setNewMessage("");
@@ -467,9 +487,16 @@ const MessagesPage = () => {
                         </Avatar>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-1">
-                            <h3 className="font-semibold truncate">
-                              {otherProfile.full_name}
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold truncate">
+                                {otherProfile.full_name}
+                              </h3>
+                              {!useMockData && unreadByConversation[conv.id] > 0 && (
+                                <Badge variant="default" className="h-5 min-w-[1.25rem] px-1.5 text-xs">
+                                  {unreadByConversation[conv.id]}
+                                </Badge>
+                              )}
+                            </div>
                             {conv.last_message && (
                               <span className="text-xs text-muted-foreground">
                                 {formatDistanceToNow(new Date(conv.last_message.created_at), {
@@ -505,13 +532,19 @@ const MessagesPage = () => {
                         {getOtherProfile(activeConversation)?.full_name[0]?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
+                    <div className="flex-1">
                       <h3 className="font-semibold">
                         {getOtherProfile(activeConversation)?.full_name}
                       </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {getOtherProfile(activeConversation)?.user_type}
-                      </p>
+                      {isOtherUserTyping ? (
+                        <p className="text-sm text-primary animate-pulse">
+                          Typing...
+                        </p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          {getOtherProfile(activeConversation)?.user_type}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -556,7 +589,12 @@ const MessagesPage = () => {
                     <Input
                       placeholder="Type a message..."
                       value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
+                      onChange={(e) => {
+                        setNewMessage(e.target.value);
+                        if (e.target.value.trim()) {
+                          startTyping();
+                        }
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
