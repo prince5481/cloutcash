@@ -35,7 +35,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onHomeClick, onContactClick, onA
         .eq("user_id", user.id)
         .maybeSingle();
       
-      if (data) {
+      if (data?.id) {
         setCurrentProfileId(data.id);
       }
     };

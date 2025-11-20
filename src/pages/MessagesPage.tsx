@@ -233,9 +233,9 @@ const MessagesPage = () => {
   }, [user]);
 
   useEffect(() => {
-    const fetchConversations = async () => {
-      if (!currentProfile) return;
+    if (!currentProfile?.id) return;
 
+    const fetchConversations = async () => {
       const { data: convData, error } = await supabase
         .from("conversations")
         .select("*")
@@ -318,10 +318,10 @@ const MessagesPage = () => {
   }, [currentProfile]);
 
   useEffect(() => {
-    if (!activeConversation) return;
+    if (!activeConversation?.id) return;
 
     // Mark conversation as read when opened
-    if (!useMockData && currentProfile) {
+    if (!useMockData && currentProfile?.id) {
       markConversationAsRead(activeConversation.id);
     }
 
