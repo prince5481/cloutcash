@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      campaigns: {
+        Row: {
+          brand_id: string
+          budget: number
+          created_at: string
+          creator_id: string | null
+          deliverables: string
+          end_date: string
+          id: string
+          start_date: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          budget: number
+          created_at?: string
+          creator_id?: string | null
+          deliverables: string
+          end_date: string
+          id?: string
+          start_date: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          budget?: number
+          created_at?: string
+          creator_id?: string | null
+          deliverables?: string
+          end_date?: string
+          id?: string
+          start_date?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaigns_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collaboration_requests: {
         Row: {
           created_at: string

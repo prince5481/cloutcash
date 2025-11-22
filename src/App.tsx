@@ -15,6 +15,7 @@ import SwipePage from "./pages/SwipePage";
 import DiscoverPage from "./pages/DiscoverPage";
 import MessagesPage from "./pages/MessagesPage";
 import CampaignsPage from "./pages/CampaignsPage";
+import CampaignDetailPage from "./pages/CampaignDetailPage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AuthProvider } from "./hooks/useAuth";
@@ -107,6 +108,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <CampaignsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/campaigns/:id" 
+            element={
+              <ProtectedRoute>
+                <CampaignDetailPage />
               </ProtectedRoute>
             } 
           />

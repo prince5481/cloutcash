@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Search, Send, Eye } from "lucide-react";
+import { Search, Send, Eye, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { useTypingIndicator } from "@/hooks/useTypingIndicator";
+import { CreateCampaignModal } from "@/components/campaigns/CreateCampaignModal";
 
 interface Profile {
   id: string;
@@ -203,6 +204,7 @@ const MessagesPage = () => {
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
   const [useMockData, setUseMockData] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [createCampaignOpen, setCreateCampaignOpen] = useState(false);
 
   // Unread count hook
   const { totalUnread, unreadByConversation, markConversationAsRead } = useUnreadCount(currentProfile?.id || null);
@@ -534,7 +536,7 @@ const MessagesPage = () => {
             {activeConversation ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-border">
+                <div className="flex items-center justify-between p-4 border-b border-border">
                   <div className="flex items-center gap-3">
                     <Avatar>
                       <AvatarImage
@@ -559,6 +561,18 @@ const MessagesPage = () => {
                       )}
                     </div>
                   </div>
+
+                  {currentProfile?.user_type === "brand" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCreateCampaignOpen(true)}
+                      className="gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Create Campaign
+                    </Button>
+                  )}
                 </div>
 
                 {/* Messages Area */}
@@ -633,6 +647,20 @@ const MessagesPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Create Campaign Modal */}
+      {currentProfile?.user_type === "brand" && activeConversation && (
+        <CreateCampaignModal
+          open={createCampaignOpen}
+          onOpenChange={setCreateCampaignOpen}
+          brandProfileId={currentProfile.id}
+          creatorProfileId={
+            currentProfile.id === activeConversation.brand_id
+              ? activeConversation.creator_id
+              : activeConversation.brand_id
+          }
+        />
+      )}
     </div>
   );
 };
