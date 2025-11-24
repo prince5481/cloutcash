@@ -17,12 +17,49 @@ interface AuthCardProps {
 }
 
 const signupSchema = z.object({
-  email: z.string().email("Invalid email address").max(255),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  name: z.string().min(1, "Name is required").max(100),
-  handle: z.string().min(1, "Handle/Brand name is required").max(100),
-  followerCount: z.number().min(0).optional(),
-  marketingBudget: z.number().min(0).optional(),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .email("Invalid email address")
+    .max(255, "Email must be less than 255 characters")
+    .refine((email) => {
+      const domain = email.split("@")[1];
+      return domain && domain.length >= 3; // Basic domain validation
+    }, "Invalid email domain"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password must be less than 128 characters")
+    .refine((password) => /[A-Z]/.test(password), "Password must contain at least one uppercase letter")
+    .refine((password) => /[a-z]/.test(password), "Password must contain at least one lowercase letter")
+    .refine((password) => /[0-9]/.test(password), "Password must contain at least one number"),
+  name: z
+    .string()
+    .trim()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters")
+    .refine((name) => /^[a-zA-Z\s'-]+$/.test(name), "Name can only contain letters, spaces, hyphens, and apostrophes"),
+  handle: z
+    .string()
+    .trim()
+    .min(2, "Handle/Brand name must be at least 2 characters")
+    .max(50, "Handle/Brand name must be less than 50 characters")
+    .refine((handle) => {
+      // Allow alphanumeric, underscores, dots, and optional @ prefix
+      const cleanHandle = handle.startsWith("@") ? handle.slice(1) : handle;
+      return /^[a-zA-Z0-9_.]+$/.test(cleanHandle);
+    }, "Handle can only contain letters, numbers, underscores, and dots"),
+  followerCount: z
+    .number()
+    .min(0, "Follower count must be positive")
+    .max(1000000000, "Follower count seems unrealistic")
+    .optional(),
+  marketingBudget: z
+    .number()
+    .min(0, "Budget must be positive")
+    .max(10000000000, "Budget must be less than 10 billion")
+    .optional(),
 });
 
 export const AuthCard = ({ mode, onSuccess }: AuthCardProps) => {
@@ -334,11 +371,11 @@ export const AuthCard = ({ mode, onSuccess }: AuthCardProps) => {
                     <Input
                       id="signup-password"
                       type="password"
-                      placeholder="Create a secure password"
+                      placeholder="At least 8 chars with uppercase, lowercase, number"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      minLength={6}
+                      minLength={8}
                       className="h-12"
                     />
                   </div>
@@ -351,7 +388,7 @@ export const AuthCard = ({ mode, onSuccess }: AuthCardProps) => {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      minLength={6}
+                      minLength={8}
                       className="h-12"
                     />
                   </div>

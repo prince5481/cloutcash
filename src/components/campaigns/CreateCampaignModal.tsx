@@ -14,13 +14,34 @@ import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 const campaignSchema = z.object({
-  title: z.string().trim().min(3, "Title must be at least 3 characters").max(100, "Title must be less than 100 characters"),
-  budget: z.string().refine(val => !isNaN(Number(val)) && Number(val) > 0, "Budget must be a positive number"),
-  deliverables: z.string().trim().min(10, "Deliverables must be at least 10 characters").max(1000, "Deliverables must be less than 1000 characters"),
+  title: z
+    .string()
+    .trim()
+    .min(3, "Title must be at least 3 characters")
+    .max(200, "Title must be less than 200 characters")
+    .refine((title) => title.length > 0, "Title cannot be empty")
+    .refine((title) => !/[<>]/.test(title), "Title cannot contain < or > characters"),
+  budget: z
+    .string()
+    .refine((val) => !isNaN(Number(val)), "Budget must be a number")
+    .refine((val) => Number(val) > 0, "Budget must be greater than 0")
+    .refine((val) => Number(val) <= 10000000000, "Budget must be less than 10 billion"),
+  deliverables: z
+    .string()
+    .trim()
+    .min(20, "Deliverables must be at least 20 characters")
+    .max(5000, "Deliverables must be less than 5000 characters")
+    .refine((text) => text.split(/\s+/).length >= 5, "Deliverables must contain at least 5 words"),
   startDate: z.date({ required_error: "Start date is required" }),
   endDate: z.date({ required_error: "End date is required" }),
-}).refine(data => data.endDate > data.startDate, {
+}).refine((data) => data.endDate > data.startDate, {
   message: "End date must be after start date",
+  path: ["endDate"],
+}).refine((data) => {
+  const daysDiff = (data.endDate.getTime() - data.startDate.getTime()) / (1000 * 60 * 60 * 24);
+  return daysDiff <= 365;
+}, {
+  message: "Campaign duration cannot exceed 1 year",
   path: ["endDate"],
 });
 

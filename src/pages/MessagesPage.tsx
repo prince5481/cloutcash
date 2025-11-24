@@ -14,6 +14,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { useTypingIndicator } from "@/hooks/useTypingIndicator";
 import { CreateCampaignModal } from "@/components/campaigns/CreateCampaignModal";
+import { z } from "zod";
 
 interface Profile {
   id: string;
@@ -376,8 +377,30 @@ const MessagesPage = () => {
     };
   }, [activeConversation, useMockData, currentProfile, markConversationAsRead]);
 
+  const messageSchema = z.object({
+    content: z
+      .string()
+      .trim()
+      .min(1, "Message cannot be empty")
+      .max(5000, "Message must be less than 5000 characters")
+      .refine((msg) => msg.length > 0, "Message cannot contain only whitespace"),
+  });
+
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !activeConversation) return;
+    if (!activeConversation) return;
+
+    // Validate message
+    const validation = messageSchema.safeParse({ content: newMessage });
+    if (!validation.success) {
+      toast({
+        title: "Invalid message",
+        description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const trimmedMessage = newMessage.trim();
 
     // Stop typing indicator
     stopTyping();
@@ -388,7 +411,7 @@ const MessagesPage = () => {
         id: `msg-${Date.now()}`,
         conversation_id: activeConversation.id,
         sender_id: currentProfile?.id || "creator-1",
-        content: newMessage.trim(),
+        content: trimmedMessage,
         created_at: new Date().toISOString(),
         read_at: null,
       };
@@ -402,7 +425,7 @@ const MessagesPage = () => {
     const { error } = await supabase.from("messages").insert({
       conversation_id: activeConversation.id,
       sender_id: currentProfile.id,
-      content: newMessage.trim(),
+      content: trimmedMessage,
     });
 
     if (error) {
