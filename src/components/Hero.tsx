@@ -60,7 +60,7 @@ export const Hero = () => {
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button variant="outline-hero" size="lg" className="text-base lg:text-lg px-8 lg:px-10 py-5 lg:py-6 h-auto" onClick={() => navigate("/login")}>
-                Book a Demo
+                ​Start Matching        
                 <TrendingUp className="ml-2 h-5 w-5" />
               </Button>
             </motion.div>
