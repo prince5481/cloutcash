@@ -38,11 +38,7 @@ const DashboardPage = () => {
   if (loading) {
     return (
       <>
-        <Navbar 
-          onHomeClick={() => navigate("/")}
-          onContactClick={() => navigate("/")}
-          onAboutClick={() => navigate("/")}
-        />
+        <Navbar />
         <div className="min-h-screen bg-background pt-20 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -52,11 +48,7 @@ const DashboardPage = () => {
 
   return (
     <>
-      <Navbar 
-        onHomeClick={() => navigate("/")}
-        onContactClick={() => navigate("/")}
-        onAboutClick={() => navigate("/")}
-      />
+      <Navbar />
       {userType === "creator" ? <CreatorDashboard /> : <BrandDashboard />}
     </>
   );

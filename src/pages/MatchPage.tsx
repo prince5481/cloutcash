@@ -40,11 +40,7 @@ const MatchPage = () => {
 
   return (
     <>
-      <Navbar 
-        onHomeClick={() => navigate("/")}
-        onContactClick={() => navigate("/")}
-        onAboutClick={() => navigate("/")}
-      />
+      <Navbar />
       <div className="min-h-screen bg-background pt-20 pb-24">
         <div className="container max-w-6xl mx-auto px-4 py-8">
           <div className="text-center mb-6">

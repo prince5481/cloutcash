@@ -26,11 +26,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      <Navbar 
-        onHomeClick={() => {}}
-        onContactClick={() => {}}
-        onAboutClick={() => {}}
-      />
+      <Navbar />
       <div className="min-h-screen bg-background pt-20 pb-32">
         <div className="container max-w-2xl mx-auto px-4 py-8">
           {/* Profile Header */}

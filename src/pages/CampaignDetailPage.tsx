@@ -230,7 +230,7 @@ export default function CampaignDetailPage() {
   if (loading) {
     return (
       <>
-        <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+        <Navbar />
         <div className="min-h-screen bg-background pt-20 flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
@@ -248,7 +248,7 @@ export default function CampaignDetailPage() {
 
   return (
     <>
-      <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+      <Navbar />
       
       <div className="min-h-screen bg-background pt-20 pb-16">
         <div className="container max-w-4xl mx-auto px-4 space-y-6">

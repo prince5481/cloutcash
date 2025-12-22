@@ -464,11 +464,7 @@ const MessagesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar
-        onHomeClick={() => {}}
-        onContactClick={() => {}}
-        onAboutClick={() => {}}
-      />
+      <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex gap-6 h-[calc(100vh-12rem)]">
           {/* Left Sidebar - Conversation List */}

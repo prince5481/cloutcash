@@ -16,6 +16,9 @@ import DiscoverPage from "./pages/DiscoverPage";
 import MessagesPage from "./pages/MessagesPage";
 import CampaignsPage from "./pages/CampaignsPage";
 import CampaignDetailPage from "./pages/CampaignDetailPage";
+import CreatorsPage from "./pages/CreatorsPage";
+import BrandsPage from "./pages/BrandsPage";
+import HowItWorksPage from "./pages/HowItWorksPage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AuthProvider } from "./hooks/useAuth";
@@ -31,6 +34,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/creators" element={<CreatorsPage />} />
+          <Route path="/brands" element={<BrandsPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route 
             path="/dashboard" 
             element={

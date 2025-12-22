@@ -113,7 +113,7 @@ export default function DiscoverPage() {
   if ((loading && candidates.length === 0) || isApplyingFilters) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+        <Navbar />
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <div className="text-center">
             <Loader2 className="animate-spin h-12 w-12 text-primary mx-auto mb-4" />
@@ -128,7 +128,7 @@ export default function DiscoverPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+      <Navbar />
       
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Left Sidebar - Filters */}

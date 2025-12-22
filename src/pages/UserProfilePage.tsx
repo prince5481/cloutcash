@@ -127,7 +127,7 @@ export default function UserProfilePage() {
   if (loading) {
     return (
       <>
-        <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+        <Navbar />
         <div className="min-h-screen bg-background pt-20 flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
@@ -138,7 +138,7 @@ export default function UserProfilePage() {
   if (!profile) {
     return (
       <>
-        <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+        <Navbar />
         <div className="min-h-screen bg-background pt-20 flex items-center justify-center">
           <p className="text-muted-foreground">Profile not found</p>
         </div>
@@ -157,7 +157,7 @@ export default function UserProfilePage() {
 
   return (
     <>
-      <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+      <Navbar />
       
       <div className="min-h-screen bg-background pt-20 pb-32">
         {/* Header Banner */}

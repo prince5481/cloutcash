@@ -206,7 +206,7 @@ export default function ProfileSetupPage() {
   if (loading) {
     return (
       <>
-        <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+        <Navbar />
         <div className="min-h-screen bg-background flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -218,7 +218,7 @@ export default function ProfileSetupPage() {
 
   return (
     <>
-      <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+      <Navbar />
       <div className="min-h-screen bg-background pt-20 pb-32">
         <div className="container max-w-3xl mx-auto px-4 py-8">
           {/* Header */}

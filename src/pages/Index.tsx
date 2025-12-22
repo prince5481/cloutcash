@@ -11,38 +11,15 @@ import { Footer } from "@/components/Footer";
 
 const Index = () => {
   const footerRef = useRef<HTMLDivElement | null>(null);
-  const howItWorksRef = useRef<HTMLDivElement | null>(null);
-  const heroRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollToFooter = () => {
-    footerRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const scrollToHowItWorks = () => {
-    howItWorksRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const scrollToHero = () => {
-    heroRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
     <>
-      <Navbar
-        onHomeClick={scrollToHero}
-        onAboutClick={scrollToHowItWorks}
-        onContactClick={scrollToFooter}
-      />
+      <Navbar />
 
       <main className="min-h-screen">
-        {/* Attach ref to Hero */}
-        <div ref={heroRef}>
-          <Hero />
-        </div>
+        <Hero />
         <Features />
-        <div ref={howItWorksRef}>
-          <HowItWorks />
-        </div>
+        <HowItWorks />
         <ForInfluencers />
         <ForBrands />
         <Testimonials />

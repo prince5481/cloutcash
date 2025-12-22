@@ -112,7 +112,7 @@ export default function CampaignsPage() {
   if (loading) {
     return (
       <>
-        <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+        <Navbar />
         <div className="min-h-screen bg-background pt-20 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -124,7 +124,7 @@ export default function CampaignsPage() {
 
   return (
     <>
-      <Navbar onHomeClick={() => {}} onContactClick={() => {}} onAboutClick={() => {}} />
+      <Navbar />
       <div className="min-h-screen bg-background pt-20 pb-16">
         <div className="container mx-auto px-4 space-y-8">
           {/* Header */}

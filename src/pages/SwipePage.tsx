@@ -134,11 +134,7 @@ const SwipePage = () => {
   if (loading && candidates.length === 0) {
     return (
       <>
-        <Navbar 
-          onHomeClick={() => navigate("/")}
-          onContactClick={() => navigate("/")}
-          onAboutClick={() => navigate("/")}
-        />
+        <Navbar />
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
@@ -151,11 +147,7 @@ const SwipePage = () => {
 
   return (
     <>
-      <Navbar 
-        onHomeClick={() => navigate("/")}
-        onContactClick={() => navigate("/")}
-        onAboutClick={() => navigate("/")}
-      />
+      <Navbar />
       
       <div className="min-h-screen bg-background pt-16 pb-32">
         {/* Top Bar */}
