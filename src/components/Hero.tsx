@@ -30,9 +30,8 @@ export const Hero = () => {
           }} transition={{
             duration: 0.8,
             delay: 0.2
-          }}>Where Micro-Influencers meet Brand Opportunities
-            <br />
-              Meet Brand Opportunities
+          }}>Where Micro-Influencers meet Brand Opportunities​<br />
+              ​
             </motion.h1>
             
             <motion.p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mb-8 lg:mb-12" initial={{
