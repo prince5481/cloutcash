@@ -30,7 +30,8 @@ export const Hero = () => {
           }} transition={{
             duration: 0.8,
             delay: 0.2
-          }}>Where Micro-Influencers meet Brand Opportunities<br />
+          }}>Where Micro-Influencers meet Brand Opportunities
+            <br />
               Meet Brand Opportunities
             </motion.h1>
             
