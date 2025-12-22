@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
+import { Search, Handshake, BarChart3 } from "lucide-react";
 
 const BrandsPage = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const BrandsPage = () => {
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               <div className="text-center p-6">
                 <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🔍</span>
+                  <Search className="w-6 h-6 text-accent" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Smart Discovery</h3>
                 <p className="text-muted-foreground text-sm">
@@ -65,7 +66,7 @@ const BrandsPage = () => {
               </div>
               <div className="text-center p-6">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🤝</span>
+                  <Handshake className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Easy Collaboration</h3>
                 <p className="text-muted-foreground text-sm">
@@ -74,7 +75,7 @@ const BrandsPage = () => {
               </div>
               <div className="text-center p-6">
                 <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">📊</span>
+                  <BarChart3 className="w-6 h-6 text-accent" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Track Results</h3>
                 <p className="text-muted-foreground text-sm">
