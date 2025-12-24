@@ -341,19 +341,23 @@ const ProgressiveStepFlow = ({
                 )}
               </motion.div>
 
-              {/* Icon */}
+              {/* Icon Container */}
               <motion.div
                 animate={{
-                  scale: isActive ? 1.1 : 1,
-                  rotate: isActive ? 5 : 0,
+                  scale: isActive ? 1.15 : 1,
+                  rotate: isActive ? 8 : 0,
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  rotate: 5,
                 }}
                 transition={{
                   type: "spring",
                   stiffness: 400,
-                  damping: 20,
+                  damping: 15,
                 }}
                 className={`
-                  w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 mt-3
+                  w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 mt-3 relative
                   ${
                     isActive
                       ? "bg-primary-foreground/20"
@@ -363,11 +367,65 @@ const ProgressiveStepFlow = ({
                   }
                 `}
               >
-                <IconComponent
-                  className={`h-7 w-7 ${
-                    isActive ? "text-primary-foreground" : "text-primary"
-                  }`}
-                />
+                {/* Icon with micro-animations */}
+                <motion.div
+                  animate={
+                    isActive
+                      ? {
+                          y: [0, -3, 0],
+                          scale: [1, 1.1, 1],
+                        }
+                      : { y: 0, scale: 1 }
+                  }
+                  transition={
+                    isActive
+                      ? {
+                          y: {
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          },
+                          scale: {
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          },
+                        }
+                      : {
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 20,
+                        }
+                  }
+                  whileHover={{
+                    y: -2,
+                    scale: 1.05,
+                    transition: { duration: 0.2 },
+                  }}
+                >
+                  <IconComponent
+                    className={`h-7 w-7 transition-colors duration-200 ${
+                      isActive ? "text-primary-foreground" : "text-primary"
+                    }`}
+                  />
+                </motion.div>
+
+                {/* Subtle glow ring on active */}
+                {isActive && (
+                  <motion.div
+                    className="absolute inset-0 rounded-xl bg-primary-foreground/10"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{
+                      opacity: [0.3, 0.6, 0.3],
+                      scale: [1, 1.05, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                )}
               </motion.div>
 
               {/* Title */}
