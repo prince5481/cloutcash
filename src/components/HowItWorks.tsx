@@ -1,6 +1,5 @@
 import { UserPlus, Search, Handshake, TrendingUp, Check } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 
@@ -11,6 +10,163 @@ interface Step {
   description: string;
   microCopy: string[];
 }
+
+// Hover Preview Tabs Component
+interface HoverPreviewTabsProps {
+  influencerContent: ReactNode;
+  brandContent: ReactNode;
+}
+
+const HoverPreviewTabs = ({ influencerContent, brandContent }: HoverPreviewTabsProps) => {
+  const [selectedTab, setSelectedTab] = useState<"influencer" | "brand">("influencer");
+  const [previewTab, setPreviewTab] = useState<"influencer" | "brand" | null>(null);
+  
+  const displayedTab = previewTab || selectedTab;
+
+  const handleTabClick = (tab: "influencer" | "brand") => {
+    setSelectedTab(tab);
+    setPreviewTab(null);
+  };
+
+  const handleTabHover = (tab: "influencer" | "brand") => {
+    if (tab !== selectedTab) {
+      setPreviewTab(tab);
+    }
+  };
+
+  const handleTabLeave = () => {
+    setPreviewTab(null);
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto mb-16">
+      {/* Custom Tab Toggle */}
+      <div 
+        className="relative flex justify-center mb-12"
+        onMouseLeave={handleTabLeave}
+      >
+        <div className="relative inline-flex bg-muted/50 rounded-full p-1.5 backdrop-blur-sm border border-border/50">
+          {/* Animated Background Pill */}
+          <motion.div
+            className="absolute top-1.5 bottom-1.5 rounded-full bg-primary shadow-lg"
+            initial={false}
+            animate={{
+              x: displayedTab === "influencer" ? 0 : "100%",
+              width: "calc(50% - 3px)",
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 30,
+            }}
+            style={{ left: "6px" }}
+          />
+          
+          {/* Glow effect on hover/active */}
+          <motion.div
+            className="absolute top-1.5 bottom-1.5 rounded-full pointer-events-none"
+            initial={false}
+            animate={{
+              x: displayedTab === "influencer" ? 0 : "100%",
+              width: "calc(50% - 3px)",
+              boxShadow: previewTab 
+                ? "0 0 20px hsl(var(--primary) / 0.4)" 
+                : "0 0 15px hsl(var(--primary) / 0.25)",
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 30,
+            }}
+            style={{ left: "6px" }}
+          />
+
+          {/* Influencer Tab */}
+          <motion.button
+            onClick={() => handleTabClick("influencer")}
+            onMouseEnter={() => handleTabHover("influencer")}
+            className={`
+              relative z-10 px-6 py-3 text-base md:text-lg font-medium rounded-full transition-colors duration-200
+              ${displayedTab === "influencer" 
+                ? "text-primary-foreground" 
+                : "text-muted-foreground hover:text-foreground"
+              }
+            `}
+            whileTap={{ scale: 0.98 }}
+          >
+            <span className="flex items-center gap-2">
+              For Influencers
+              {selectedTab === "influencer" && !previewTab && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-1.5 h-1.5 rounded-full bg-primary-foreground/70"
+                />
+              )}
+            </span>
+          </motion.button>
+
+          {/* Brand Tab */}
+          <motion.button
+            onClick={() => handleTabClick("brand")}
+            onMouseEnter={() => handleTabHover("brand")}
+            className={`
+              relative z-10 px-6 py-3 text-base md:text-lg font-medium rounded-full transition-colors duration-200
+              ${displayedTab === "brand" 
+                ? "text-primary-foreground" 
+                : "text-muted-foreground hover:text-foreground"
+              }
+            `}
+            whileTap={{ scale: 0.98 }}
+          >
+            <span className="flex items-center gap-2">
+              For Brands
+              {selectedTab === "brand" && !previewTab && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-1.5 h-1.5 rounded-full bg-primary-foreground/70"
+                />
+              )}
+            </span>
+          </motion.button>
+        </div>
+
+        {/* Preview indicator */}
+        <AnimatePresence>
+          {previewTab && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-muted-foreground"
+            >
+              Preview mode
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Tab Content with Cross-fade */}
+      <div className="relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={displayedTab}
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{
+              duration: 0.25,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+          >
+            {displayedTab === "influencer" ? influencerContent : brandContent}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
 
 // Animated micro-copy component
 const MicroCopyAnimator = ({ phrases, isActive }: { phrases: string[]; isActive: boolean }) => {
@@ -156,17 +312,8 @@ export const HowItWorks = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="influencer" className="max-w-5xl mx-auto mb-16">
-          <TabsList className="grid w-full grid-cols-2 mb-12">
-            <TabsTrigger value="influencer" className="text-lg py-3">
-              For Influencers
-            </TabsTrigger>
-            <TabsTrigger value="brand" className="text-lg py-3">
-              For Brands
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="influencer">
+        <HoverPreviewTabs
+          influencerContent={
             <ProgressiveStepFlow
               steps={influencerSteps}
               activeStep={activeInfluencerStep}
@@ -181,9 +328,8 @@ export const HowItWorks = () => {
                 )
               }
             />
-          </TabsContent>
-
-          <TabsContent value="brand">
+          }
+          brandContent={
             <ProgressiveStepFlow
               steps={brandSteps}
               activeStep={activeBrandStep}
@@ -198,8 +344,8 @@ export const HowItWorks = () => {
                 )
               }
             />
-          </TabsContent>
-        </Tabs>
+          }
+        />
 
         <div className="mt-16 text-center">
           <div className="inline-block bg-primary/10 border border-primary/20 rounded-2xl px-8 py-6">
