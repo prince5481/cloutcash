@@ -8,6 +8,7 @@ interface Step {
   icon: LucideIcon;
   title: string;
   description: string;
+  outcome: string;
   microCopy: string[];
 }
 
@@ -224,28 +225,32 @@ export const HowItWorks = () => {
       number: "1",
       icon: UserPlus,
       title: "Create Profile",
-      description: "Connect your Instagram and we'll automatically fetch your metrics, audience demographics, and engagement data.",
+      description: "Connect your socials and let your profile highlight what makes you unique. We surface opportunities that actually fit your style — no random campaigns.",
+      outcome: "Your profile works for you, attracting the right brands automatically.",
       microCopy: ["Syncing metrics...", "Analyzing audience...", "Profile ready!"],
     },
     {
       number: "2",
       icon: Search,
       title: "Get Matched",
-      description: "Our AI intelligently analyzes your content style and audience to find campaigns that perfectly align with your niche.",
+      description: "Matches are based on your content style, audience fit, and preferences. No mass outreach. No irrelevant deals.",
+      outcome: "Only see opportunities that align with your niche and values.",
       microCopy: ["Finding matches...", "Scoring compatibility...", "3 matches found!"],
     },
     {
       number: "3",
       icon: Handshake,
-      title: "Review & Connect",
-      description: "Browse matched campaigns, see transparent budgets, and connect directly with brands you truly love.",
-      microCopy: ["Loading campaigns...", "Checking budgets...", "Ready to connect!"],
+      title: "Connect & Chat",
+      description: "Discuss deliverables, timelines, and expectations directly with brands. Clear communication from the start means less back-and-forth later.",
+      outcome: "Get aligned on details before you commit — no surprises.",
+      microCopy: ["Opening chat...", "Syncing details...", "Ready to connect!"],
     },
     {
       number: "4",
       icon: TrendingUp,
-      title: "Create & Earn",
-      description: "Deliver your content, track performance in real-time, and receive payment securely through our streamlined and reliable platform.",
+      title: "Create Together",
+      description: "Collaborate, deliver great content, and build relationships that lead to repeat partnerships and long-term growth.",
+      outcome: "Turn one-off gigs into ongoing brand relationships.",
       microCopy: ["Tracking views...", "Processing payment...", "Earnings updated!"],
     },
   ];
@@ -255,28 +260,32 @@ export const HowItWorks = () => {
       number: "1",
       icon: UserPlus,
       title: "Post Campaign",
-      description: "Define your campaign goals, budget, target audience, and content requirements in just a few minutes.",
+      description: "Define your goals, budget, and ideal creator profile. Your brief helps us find creators who genuinely fit — not just anyone available.",
+      outcome: "Start with clarity so every match is relevant from day one.",
       microCopy: ["Setting goals...", "Defining audience...", "Campaign live!"],
     },
     {
       number: "2",
       icon: Search,
       title: "Get Recommendations",
-      description: "Receive AI-curated creator recommendations based on quality and performance metrics.",
+      description: "Receive AI-curated creator recommendations based on audience alignment, content quality, and past performance. No guesswork.",
+      outcome: "Spend less time searching, more time evaluating quality fits.",
       microCopy: ["Scanning creators...", "Ranking by fit...", "12 creators matched!"],
     },
     {
       number: "3",
       icon: Handshake,
       title: "Review & Select",
-      description: "Browse creator portfolios, compare metrics, and shortlist the perfect creators for your campaign in a jiffy.",
+      description: "Browse portfolios, compare metrics, and connect directly. Discuss scope, timelines, and expectations before committing.",
+      outcome: "Make confident decisions with transparent creator insights.",
       microCopy: ["Loading portfolios...", "Shortlisting creators...", "Ready to hire!"],
     },
     {
       number: "4",
       icon: TrendingUp,
       title: "Launch & Track",
-      description: "Manage collaborations, track campaign analytics, and measure ROI with detailed performance reports.",
+      description: "Manage collaborations, track real-time analytics, and build creator relationships that deliver results again and again.",
+      outcome: "Turn campaigns into repeatable partnerships with proven creators.",
       microCopy: ["Launching campaign...", "Tracking ROI...", "Results are in!"],
     },
   ];
@@ -347,13 +356,24 @@ export const HowItWorks = () => {
           }
         />
 
-        <div className="mt-16 text-center">
+        <div className="mt-20 text-center space-y-6">
           <div className="inline-block bg-primary/10 border border-primary/20 rounded-2xl px-8 py-6">
             <p className="text-lg font-semibold text-foreground mb-2">
               Average Time to First Match
             </p>
             <p className="text-4xl font-bold text-primary">24 Hours</p>
           </div>
+          
+          {/* Reassurance line */}
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-muted-foreground text-sm max-w-md mx-auto"
+          >
+            Simple, transparent, and relevant collaborations — built for creators and brands who value quality over quantity.
+          </motion.p>
         </div>
       </div>
     </section>
@@ -477,7 +497,7 @@ const ProgressiveStepFlow = ({
       </div>
 
       {/* Step Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {steps.map((step, index) => {
           const isActive = activeStep === index;
           const isPast = index < activeStep || completedSteps.includes(index);
@@ -507,10 +527,10 @@ const ProgressiveStepFlow = ({
                 damping: 25,
               }}
               className={`
-                relative cursor-pointer rounded-2xl p-6 text-center transition-all duration-300
+                relative cursor-pointer rounded-2xl p-6 pb-8 text-center transition-all duration-300
                 ${
                   isActive
-                    ? "bg-primary shadow-xl shadow-primary/20 ring-2 ring-primary/30"
+                    ? "bg-primary shadow-xl shadow-primary/25 ring-2 ring-primary/40"
                     : isPast
                     ? "bg-primary/5 border-2 border-primary/30"
                     : "bg-card border-2 border-border hover:border-primary/40"
@@ -641,23 +661,34 @@ const ProgressiveStepFlow = ({
                 {step.title}
               </h3>
 
-              {/* Description */}
+              {/* Description & Outcome */}
               <AnimatePresence mode="wait">
                 {isActive ? (
-                  <motion.p
+                  <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="text-primary-foreground/80 text-sm leading-relaxed"
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="space-y-3"
                   >
-                    {step.description}
-                  </motion.p>
+                    <p className="text-primary-foreground/85 text-sm leading-relaxed">
+                      {step.description}
+                    </p>
+                    <motion.p 
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15, duration: 0.2 }}
+                      className="text-primary-foreground/70 text-xs italic border-t border-primary-foreground/20 pt-2"
+                    >
+                      {step.outcome}
+                    </motion.p>
+                  </motion.div>
                 ) : (
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className={`text-sm leading-relaxed ${
+                    transition={{ duration: 0.25 }}
+                    className={`text-sm leading-relaxed line-clamp-2 ${
                       isPast ? "text-primary/70" : "text-muted-foreground"
                     }`}
                   >
@@ -669,10 +700,17 @@ const ProgressiveStepFlow = ({
               {/* Dynamic Micro-copy */}
               <AnimatePresence mode="wait">
                 {isActive && (
-                  <MicroCopyAnimator 
-                    phrases={step.microCopy} 
-                    isActive={isActive} 
-                  />
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <MicroCopyAnimator 
+                      phrases={step.microCopy} 
+                      isActive={isActive} 
+                    />
+                  </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
