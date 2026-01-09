@@ -399,7 +399,6 @@ function ProfileCard({ influencer, matchScore }: { influencer: Influencer; match
             {influencer.niches[0]}
           </Badge>
         </div>
-
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
           <div className="flex items-center gap-2 text-sm bg-background/50 rounded-lg px-3 py-2 border border-border/50">
