@@ -32,11 +32,18 @@ export default function DiscoverPage() {
   // Filter out swiped cards
   const activeCards = candidates.filter(c => !swipedCardIds.has(c.item.id));
   const currentCandidate = activeCards[0];
-  
+
+  // *** FIXED: motion values declared before useEffect ***
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-300, 300], [-25, 25]);
   const opacity = useTransform(x, [-300, -150, 0, 150, 300], [0, 1, 1, 1, 0]);
+
+  // Reset motion values whenever the active card changes
+  useEffect(() => {
+    x.set(0);
+    y.set(0);
+  }, [currentCandidate?.item.id]);
 
   // Load more cards when running low
   useEffect(() => {
@@ -49,7 +56,7 @@ export default function DiscoverPage() {
     if (!currentCandidate) return;
 
     const cardId = currentCandidate.item.id;
-    
+
     setExitDirection(direction);
     const interactionType = direction === 'right' ? 'like' : direction === 'up' ? 'superlike' : 'pass';
     recordFeedback(cardId, interactionType);
@@ -75,7 +82,7 @@ export default function DiscoverPage() {
 
   const handleApplyFilters = async () => {
     setIsApplyingFilters(true);
-    
+
     await updateFilters({
       niches: filterNiches ? filterNiches.split(',').map(n => n.trim()) : undefined,
       geo: filterLocation ? filterLocation.split(',').map(l => l.trim()) : undefined,
@@ -84,12 +91,12 @@ export default function DiscoverPage() {
       minFollowers: filterFollowers[0] > 0 ? filterFollowers[0] : undefined,
     });
     await refetch();
-    
+
     // Clear swiped cards when applying new filters
     setSwipedCardIds(new Set());
     setExitDirection(null);
     setIsApplyingFilters(false);
-    
+
     toast({
       title: "Filters Applied",
       description: "Showing updated results",
@@ -129,12 +136,12 @@ export default function DiscoverPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Left Sidebar - Filters */}
         <div className="w-80 border-r border-border bg-card/50 backdrop-blur-sm p-6 overflow-y-auto">
           <h2 className="text-xl font-bold mb-6 text-foreground">Filters</h2>
-          
+
           <div className="space-y-6">
             <div>
               <Label htmlFor="niche" className="text-sm font-medium">Niche</Label>
@@ -264,13 +271,13 @@ export default function DiscoverPage() {
                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{
-                      x: exitDirection === 'left' ? -400 : exitDirection === 'right' ? 400 : 0,
-                      y: exitDirection === 'up' ? -400 : 0,
-                      opacity: 0,
-                      scale: 0.8,
-                      rotate: exitDirection === 'left' ? -30 : exitDirection === 'right' ? 30 : 0,
-                      transition: { duration: 0.3, ease: "easeIn" }
-                    }}
+  x: exitDirection === 'left' ? -window.innerWidth : exitDirection === 'right' ? window.innerWidth : 0,
+  y: exitDirection === 'up' ? -window.innerHeight : 0,
+  opacity: 0,
+  scale: 0.8,
+  rotate: exitDirection === 'left' ? -30 : exitDirection === 'right' ? 30 : 0,
+  transition: { duration: 0.3, ease: "easeIn" }
+}}
                     transition={{ 
                       type: "spring", 
                       stiffness: 300, 
@@ -408,51 +415,14 @@ function ProfileCard({ influencer, matchScore }: { influencer: Influencer; match
             <span>{(influencer.followers / 1000).toFixed(0)}K</span>
           </div>
           <div className="flex items-center gap-2 text-sm bg-background/50 rounded-lg px-3 py-2 border border-border/50">
-            <TrendingUp className="w-4 h-4 text-accent flex-shrink-0" />
-            <span>{influencer.engagementRate}%</span>
-          </div>
+  <TrendingUp className="w-4 h-4 text-accent flex-shrink-0" />
+  <span>{(influencer.engagementRate * 100).toFixed(1)}%</span>
+</div>
         </div>
 
         {/* Bio */}
-        {influencer.bio && (
-          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">{influencer.bio}</p>
-        )}
-
-        {/* Mini Insights */}
-        <div className="pt-4 border-t border-border/50">
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="bg-primary/5 rounded-lg py-2 border border-primary/10">
-              <div className="text-xs text-muted-foreground mb-1">Overlap</div>
-              <div className="text-sm font-bold text-primary">
-                {Math.round(matchScore * 85)}%
-              </div>
-            </div>
-            <div className="bg-accent/5 rounded-lg py-2 border border-accent/10">
-              <div className="text-xs text-muted-foreground mb-1">Engagement</div>
-              <div className="text-sm font-bold text-accent">
-                {influencer.engagementRate > 5 ? 'High' : influencer.engagementRate > 2 ? 'Mid' : 'Low'}
-              </div>
-            </div>
-            <div className="bg-primary/5 rounded-lg py-2 border border-primary/10">
-              <div className="text-xs text-muted-foreground mb-1">Fit</div>
-              <div className="text-sm font-bold text-primary">
-                {matchScore > 0.8 ? 'Great' : matchScore > 0.6 ? 'Good' : 'Fair'}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Platforms */}
-        <div className="flex gap-2 flex-wrap">
-          {influencer.platforms.map(platform => (
-            <Badge 
-              key={platform} 
-              variant="outline" 
-              className="text-xs border-primary/30 text-primary hover:bg-primary/10 transition-colors"
-            >
-              {platform}
-            </Badge>
-          ))}
+        <div>
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-5">{influencer.bio}</p>
         </div>
       </div>
     </div>
